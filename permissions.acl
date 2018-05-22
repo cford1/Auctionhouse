@@ -12,6 +12,63 @@
  * limitations under the License.
  */
 
+
+
+rule AuctionerContracts {
+  description: "Auctioners have full access to contracts"
+  participant: "org.quick.auction.Auctioner"
+  operation: ALL
+  resource: "org.quick.auction.Contract"
+  action: ALLOW
+}
+
+rule AuctionerEverything {
+  description: "Auctioners can see everything"
+  participant: "org.quick.auction.Auctioner"
+  operation: READ
+  resource: "org.quick.auction.*"
+  action: ALLOW
+}
+
+rule BuyerSellerContracts {
+  description: "Buyers/Sellers can read contracts"
+  participant: "org.quick.auction.Business"
+  operation: READ
+  resource: "org.quick.auction.Contract"
+  action: ALLOW
+}
+
+rule BuyerSellerOwnedItems {
+  description: "Buyers/Sellers have full access to their own items"
+    participant(p): "org.quick.auction.Business"
+    operation: ALL
+    resource(i): "org.quick.auction.Item"
+    condition: (i.owner.equals(p.name))
+    action: ALLOW
+}
+
+rule BuyerSellerItems {
+    description: "Buyers/Sellers can see all items"
+    participant: "org.quick.auction.Business"
+    operation: READ
+    resource: "org.quick.auction.Item"
+    action: ALLOW
+}
+
+/* Setting access permissions on properties of participants doesn't seem to be possible yet 
+ * So I tried to fix this by just defining a more specific rule above (they can see all items)
+ * and a less specific rule below (they can't see each other). Apparently it's evaluated top 
+ * --> bottom, so hopefully this works.
+ */
+rule BuyerSellerEachOther {
+    description: "Buyers/Sellers cannot see each other"
+    participant: "org.quick.auction.Business"
+    operation: ALL
+    resource: "org.quick.auction.Buyer"
+    action: DENY
+}
+
+
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
     participant: "org.hyperledger.composer.system.NetworkAdmin"
