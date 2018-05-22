@@ -56,5 +56,6 @@ participant Seller extends Business {
 transaction Purchase {
   o Double newValue
   --> Buyer newOwner
+  --> Seller seller
   --> Item item
 }
