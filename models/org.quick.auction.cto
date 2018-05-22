@@ -1,0 +1,54 @@
+namespace org.quick.auction
+
+abstract participant Business identified by email {
+  o String email
+  o String name
+}
+
+asset Contract identified by contractId {
+  o String contractId
+  o DateTime transactionDate
+  --> Seller seller
+  --> Buyer buyer
+  --> Auctioner auctioner
+}
+
+asset Item identified by itemId {
+  o String itemId
+  o String name
+  o Double value
+  o String owner
+  o AuctionStatus status
+}
+
+enum AuctionStatus {
+  o NEW
+  o SOLD
+  o BEING_AUCTIONED
+}
+
+concept Address {
+  o String street
+  o String city
+  o String state
+  o String zip
+}
+
+participant Auctioner identified by email {
+  o String email
+  o String name
+  o String itemForBid
+  o Double currentValueOfItemForBid
+}
+
+participant Buyer extends Business {
+  o Double accountBalance
+  o Item [] itemsOwned
+  o Address address
+}
+
+participant Seller extends Business {
+  o Double accountBalance
+  o Item [] itemsOwned
+  o Address address
+}
