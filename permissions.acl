@@ -56,7 +56,9 @@ rule BuyerSellerItems {
 }
 
 /* Setting access permissions on properties of participants doesn't seem to be possible yet 
- * So I tried to fix this by just defining a more specific rule above (they can see all items)* and a less specific rule below (they can't see each other). Apparently it's evaluated top * --> bottom, so hopefully this works.
+ * So I tried to fix this by just defining a more specific rule above (they can see all items)
+ * and a less specific rule below (they can't see each other). Apparently it's evaluated top 
+ * --> bottom, so hopefully this works.
  */
 rule BuyerSellerEachOther {
     description: "Buyers/Sellers cannot see each other"
