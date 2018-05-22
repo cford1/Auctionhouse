@@ -60,11 +60,22 @@ rule BuyerSellerItems {
  * and a less specific rule below (they can't see each other). Apparently it's evaluated top 
  * --> bottom, so hopefully this works.
  */
+
+rule BuyerSellerSelf {
+   	description: "Buyers/Sellers can update their own account balance"
+    participant(p): "org.quick.auction.Business"
+    operation: ALL
+    resource(r): "org.quick.auction.Business"
+  	condition: (p==r)
+    action: ALLOW
+  
+}
+
 rule BuyerSellerEachOther {
     description: "Buyers/Sellers cannot see each other"
     participant: "org.quick.auction.Business"
     operation: ALL
-    resource: "org.quick.auction.Buyer"
+    resource: "org.quick.auction.Business"
     action: DENY
 }
 

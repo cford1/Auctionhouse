@@ -17,7 +17,7 @@ asset Item identified by itemId {
   o String itemId
   o String name
   o Double value
-  o String owner
+  --> Business owner
   o AuctionStatus status
 }
 
@@ -37,18 +37,24 @@ concept Address {
 participant Auctioner identified by email {
   o String email
   o String name
-  o String itemForBid
+  --> Item itemForBid
   o Double currentValueOfItemForBid
 }
 
 participant Buyer extends Business {
   o Double accountBalance
-  o Item [] itemsOwned
+  --> Item [] itemsOwned
   o Address address
 }
 
 participant Seller extends Business {
   o Double accountBalance
-  o Item [] itemsOwned
+  --> Item [] itemsOwned
   o Address address
+}
+
+transaction Purchase {
+  o Double newValue
+  --> Buyer newOwner
+  --> Item item
 }
