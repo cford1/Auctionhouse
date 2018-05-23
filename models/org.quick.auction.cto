@@ -37,8 +37,8 @@ concept Address {
 participant Auctioner identified by email {
   o String email
   o String name
-  --> Item itemForBid
-  o Double currentValueOfItemForBid
+  --> Item itemForBid optional
+  o Double currentValueOfItemForBid optional
 }
 
 participant Buyer extends Business {
@@ -51,6 +51,9 @@ participant Seller extends Business {
   o Double accountBalance
   --> Item [] itemsOwned
   o Address address
+}
+
+transaction demoMode {
 }
 
 transaction Purchase {
