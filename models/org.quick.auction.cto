@@ -60,4 +60,21 @@ transaction Purchase {
   --> Item item
 }
 
+transaction RequestAuction {
+  --> Auctioner auctioner
+  --> Seller seller
+  --> Item item
+}
+
+transaction Bid {
+  o Double bidAmount
+  --> Auctioner auctioner
+}
+
+transaction AcceptBid {
+  --> Buyer buyer
+  --> Seller seller
+  --> Auctioner auctioner
+  --> Item item
+}
 
