@@ -43,7 +43,7 @@ rule BuyerSellerOwnedItems {
     participant(p): "org.quick.auction.Business"
     operation: ALL
     resource(i): "org.quick.auction.Item"
-    condition: (i.owner.equals(p.name))
+    condition: (i.owner == p)
     action: ALLOW
 }
 
