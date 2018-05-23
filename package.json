@@ -28,7 +28,6 @@
     "chai": "latest",
     "chai-as-promised": "latest",
     "cucumber": "^2.2.0",
-    "datetime": "latest",
     "eslint": "latest",
     "nyc": "latest",
     "mkdirp": "latest",
