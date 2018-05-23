@@ -39,6 +39,7 @@ participant Auctioner identified by email {
   o String name
   --> Item itemForBid optional
   o Double currentValueOfItemForBid optional
+  --> Business highestBidder optional
 }
 
 participant Buyer extends Business {
@@ -72,10 +73,10 @@ transaction RequestAuction {
 transaction Bid {
   o Double bidAmount
   --> Auctioner auctioner
+  --> Business bidder
 }
 
 transaction AcceptBid {
-  --> Buyer buyer
   --> Seller seller
   --> Auctioner auctioner
   --> Item item
