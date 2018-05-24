@@ -60,7 +60,7 @@ rule BuyerSellerItems {
  * and a less specific rule below (they can't see each other). Apparently it's evaluated top 
  * --> bottom, so hopefully this works.
  */
-
+/*
 rule BuyerSellerSelf {
    	description: "Buyers/Sellers can update their own account balance"
     participant(p): "org.quick.auction.Business"
@@ -78,7 +78,7 @@ rule BuyerSellerEachOther {
     resource: "org.quick.auction.Business"
     action: DENY
 }
-
+*/
 
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
