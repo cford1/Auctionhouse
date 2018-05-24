@@ -187,7 +187,7 @@ rule AuctionerAcceptBid {
 }
 
 rule BuyerBid {
-    description: "Sellers CAN bid on an item"
+    description: "Buyers CAN bid on an item"
     participant: "org.quick.auction.Buyer"
     operation: ALL
     resource: "**"
