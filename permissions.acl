@@ -13,6 +13,13 @@
  */
 
 
+rule SellerAddItems {
+    description: "Sellers cannot add an item"
+    participant: "org.quick.auction.Seller"
+    operation: UPDATE
+    resource: "org.quick.auction.Item"
+    action: DENY
+}
 
 rule AuctionerContracts {
   description: "Auctioners have full access to contracts"
@@ -117,4 +124,94 @@ rule NetworkAdminSystem {
     operation: ALL
     resource: "org.hyperledger.composer.system.**"
     action: ALLOW
+}
+
+rule SellerRequestAuction {
+    description: "Sellers CAN request an item to be auctioned"
+    participant: "org.quick.auction.Seller"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.RequestAuction"
+    condition: (true)
+    action: ALLOW
+}
+
+rule BuyerRequestAuction {
+    description: "Buyers cannot request an item to be auctioned"
+    participant: "org.quick.auction.Buyer"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.RequestAuction"
+    condition: (true)
+    action: DENY
+}
+
+rule AuctionerRequestAuction {
+    description: "Auctioners cannot request an item to be auctioned"
+    participant: "org.quick.auction.Auctioner"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.RequestAuction"
+    condition: (true)
+    action: DENY
+}
+
+rule SellerAcceptBid {
+    description: "Sellers CAN accept a pending bid on an item"
+    participant: "org.quick.auction.Seller"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.AcceptBid"
+    condition: (true)
+    action: ALLOW
+}
+
+rule BuyerAcceptBid {
+    description: "Buyers cannot accept a pending bid on an item"
+    participant: "org.quick.auction.Buyer"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.AcceptBid"
+    condition: (true)
+    action: DENY
+}
+
+rule AuctionerAcceptBid {
+    description: "Auctioners cannot accept a pending bid on an item"
+    participant: "org.quick.auction.Auctioner"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.AcceptBid"
+    condition: (true)
+    action: DENY
+}
+
+rule BuyerBid {
+    description: "Sellers CAN bid on an item"
+    participant: "org.quick.auction.Buyer"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.Bid"
+    condition: (true)
+    action: ALLOW
+}
+
+rule SellerBid {
+    description: "Sellers cannot bid on an item"
+    participant: "org.quick.auction.Seller"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.Bid"
+    condition: (true)
+    action: DENY
+}
+
+rule AuctionerBid {
+    description: "Auctioners cannot bid on an item"
+    participant: "org.quick.auction.Auctioner"
+    operation: ALL
+    resource: "**"
+    transaction(tx): "org.quick.auction.Bid"
+    condition: (true)
+    action: DENY
 }
