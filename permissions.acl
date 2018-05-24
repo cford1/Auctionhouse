@@ -13,10 +13,10 @@
  */
 
 
-rule SellerAddItems {
-    description: "Sellers cannot add an item"
-    participant: "org.quick.auction.Seller"
-    operation: UPDATE
+rule BuyerAddItems {
+    description: "Buyers cannot add an item"
+    participant: "org.quick.auction.Buyer"
+    operation: CREATE
     resource: "org.quick.auction.Item"
     action: DENY
 }
