@@ -79,6 +79,29 @@ rule BuyerSellerEachOther {
     action: DENY
 }
 
+rule NetworkBuyerUser {
+    description: "Grant business network buyers read access to user resources"
+    participant: "org.quick.auction.Buyer"
+    operation: READ
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkSellerUser {
+    description: "Grant business network sellers read access to user resources"
+    participant: "org.quick.auction.Seller"
+    operation: READ
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAuctionerUser {
+    description: "Grant business network auctioners full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
 
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
