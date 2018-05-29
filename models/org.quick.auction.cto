@@ -43,15 +43,21 @@ participant Auctioner identified by email {
 }
 
 participant Buyer extends Business {
-  o Double accountBalance
+  --> PrivateInfo pinf
   --> Item [] itemsOwned
   o Address address
 }
 
 participant Seller extends Business {
-  o Double accountBalance
+  --> PrivateInfo pinf
   --> Item [] itemsOwned
   o Address address
+}
+
+
+asset PrivateInfo identified by email {
+    o String email
+    o Double accountBalance
 }
 
 transaction demoMode {
