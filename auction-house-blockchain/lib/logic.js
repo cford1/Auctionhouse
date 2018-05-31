@@ -185,19 +185,57 @@ async function acceptBid(purchase){
 
     let aucRegistry = await getParticipantRegistry('org.quick.auction.Auctioner');
     await aucRegistry.update(purchase.auctioner);
-
-    /*var factory = getFactory();
-    var contract = factory.newResource('org.quick.Auction', 'Contract', 'CON_' + contractNum);
-    contract.seller = factory.newRelationship('org.quick.Auction', 'Seller', purchase.seller.email);
-    contract.buyer = factory.newRelationship('org.quick.Auction', 'Buyer', buyer.email);
-    contract.auctioner = factory.newRelationship('org.quick.Auction', 'Auctioner', purchase.auctioner.email);
-    contract.transactionDate = NULL;*/
-    
-    /*
-    assetRegistry = await getAssetRegistry('org.quick.auction.Contract');
-    await assetRegistry.update(contract);
-    */
 }
 
-/* TO DO: 
+/**
+* Add a business
+* @param {org.quick.auction.AddBusiness} business 
+* @transaction
+*/
+function addBusiness(business){
+    var nameSpace = 'org.quick.auction';
+  var factory = getFactory();
+
+    var address = factory.newConcept(nameSpace, 'Address');
+    address = business.address;
+
+    var pinf = factory.newResource(nameSpace, 'PrivateInfo', business.email);
+    pinf.accountBalance = business.accountBalance;
+
+    var biz = factory.newResource(nameSpace, business.status, business.email);
+    biz.name = business.name;
+    biz.address = address;
+    biz.pinf = pinf;
+
+    return getAssetRegistry('org.quick.auction.PrivateInfo')
+        .then(function(privRegistry){
+            return privRegistry.addAll([pinf]);
+        })
+        .then(function(){
+            return getParticipantRegistry(nameSpace + '.' + business.status)
+        })
+        .then(function(businessRegistry) {
+            return businessRegistry.addAll([biz]);
+        });
+
+}
+
+/**
+* Allow/deny a business access to own private info
+* @param {org.quick.auction.ChangeAccess} allowaccess 
+* @transaction
+*/
+/*
+function ChangeAccess(allowaccess){
+  if(!allowaccess.recipient.accessibleInfo){
+    allowaccess.recipient.accessibleInfo = [];
+  }
+    if(permission.equals("allow")){
+        allowaccess.recipient.accessibleInfo.push(allowaccess.owner.pinf);
+    } else{
+        allowaccess.recipient.accessibleInfo.splice(allowaccess.recipient.accessibleInfo.indexOf(allowaccess.owner.pinf),1);
+    }
+    let businessRegistry = getParticipantRegistry('org.quick.auction.Business');
+    businessRegistry.update(allowaccess.recipient);
+}
 */

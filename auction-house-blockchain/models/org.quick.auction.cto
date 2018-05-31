@@ -44,12 +44,14 @@ participant Auctioner identified by email {
 
 participant Buyer extends Business {
   --> PrivateInfo pinf
+  --> PrivateInfo [] accessibleInfo
   --> Item [] itemsOwned
   o Address address
 }
 
 participant Seller extends Business {
   --> PrivateInfo pinf
+  --> PrivateInfo [] accessibleInfo
   --> Item [] itemsOwned
   o Address address
 }
@@ -88,3 +90,15 @@ transaction AcceptBid {
   --> Item item
 }
 
+transaction AddBusiness {
+  o String email
+  o String name
+  o Double accountBalance
+  o Address address
+}
+
+transaction ChangeAccess {
+  --> Business owner
+  --> Business recipient
+  o String permission
+}
