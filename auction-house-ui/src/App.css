@@ -1,4 +1,4 @@
-.App {
+.Page {
   background: url(https://www.coinannouncer.com/wp-content/uploads/2018/02/Pic.jpg) no-repeat center top;
   height: 100%;
   width: 100%;
@@ -10,6 +10,18 @@ p {
   font-family: 'Open Sans', sans-serif;
   text-align: center;
 }
+
+.Nav {
+  list-style-type: none;
+  width: 100%;
+}
+
+.Nav li {
+  display: inline-block;
+  width: 150px;
+  color: white;
+}
+
 
 .Header p {
   font-family: 'Roboto Slab', serif;
@@ -28,21 +40,33 @@ p {
 
 }
 
-.Login-button {
+.Login-text {
   color: #ffffff;
   height: 50px;
   width: 200px;
-}
-
-.Login-text {
   padding: 12px;
-}
-
-.Login-text p {
-  text-align: center;
 }
 
 .LoginField {
   margin: auto;
   width: 200px;
 }
+
+.Login-submit {
+  margin:auto;
+  margin-top: 10%;
+  padding-top: 1px;
+  height: 50px;
+  width: 100px;
+  background-color: rgba(150, 150, 150, .3);
+  border-width: 0px;
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-size: 15px;
+}
+
+
+
+
+
+
