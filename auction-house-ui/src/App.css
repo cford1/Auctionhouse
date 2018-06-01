@@ -14,6 +14,8 @@ p {
 .Nav {
   list-style-type: none;
   width: 100%;
+  margin:auto;
+  background-color: rgba(3,3, 3,.7);
 }
 
 .Nav li {
@@ -25,7 +27,23 @@ p {
   padding-top: 20px;
   padding-bottom:0px;
   text-align: center;
-  background-color: rgba(3,3,3,.7);
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+}
+
+.Nav li:hover {
+  background-color: rgba(150, 150, 150,.3);
+}
+
+.Nav li a {
+  text-decoration: none;
+  color: white;
+  width: 150px;
+  height: 50px;
+}
+
+.Nav li a:visited {
+  color: white;
 }
 
 
@@ -71,6 +89,9 @@ p {
   font-size: 15px;
 }
 
+.Login-submit:hover {
+  background-color: rgba(150, 150, 150, .7);
+}
 
 
 
