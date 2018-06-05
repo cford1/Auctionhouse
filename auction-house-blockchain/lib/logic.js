@@ -194,7 +194,7 @@ async function acceptBid(purchase){
 */
 function addBusiness(business){
     var nameSpace = 'org.quick.auction';
-  var factory = getFactory();
+    var factory = getFactory();
 
     var address = factory.newConcept(nameSpace, 'Address');
     address = business.address;
@@ -216,6 +216,37 @@ function addBusiness(business){
         })
         .then(function(businessRegistry) {
             return businessRegistry.addAll([biz]);
+        });
+
+}
+
+/**
+* Add an item
+* @param {org.quick.auction.AddItem} newItem 
+* @transaction
+*/
+function addBusiness(newItem){
+    var nameSpace = 'org.quick.auction';
+    var factory = getFactory();
+
+
+    var item = factory.newResource(nameSpace, "Item", newItem.itemId);
+    item.name = newItem.name;
+    item.owner = newItem.owner;
+    item.value = newItem.value;
+    item.status = 'NEW';
+
+    newItem.owner.itemsOwned.push(item);
+
+    return getAssetRegistry('org.quick.auction.Item')
+        .then(function(itemReg){
+            return itemReg.addAll([item]);
+        })
+        .then(function(){
+            return getParticipantRegistry(nameSpace + '.Seller')
+        })
+        .then(function(sellerReg) {
+            return sellerReg.update(newItem.owner);
         });
 
 }
