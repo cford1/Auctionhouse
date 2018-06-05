@@ -93,7 +93,14 @@ p {
   color: black;
 }
 
-.Items {
+h1{
+  font-family: 'Montserrat';
+  font-size: 17px;
+  color: #17397B;
+  text-decoration: underline;
+}
+
+.ListContainer {
   display: inline-block;
   text-align: left;
   width: 50%;
@@ -103,34 +110,34 @@ p {
   border-color: #F27731;
   padding-left: 10px;
 }
-.Items h1{
-  font-family: 'Montserrat';
-  font-size: 17px;
-  color: #17397B;
-  text-decoration: underline;
-}
 
-.Items table {
+table {
   font-family: 'Open Sans', sans-serif;
   font-size: 15px;
 }
 
-.Items table tr {
+table tr {
   height: 30px;
 }
 
-.Items table th {
+table th {
   font-weight: 700;
   padding-bottom: 10px;
   padding-right: 10px;
 }
 
-.Items table td {
+table td {
   padding-bottom: 10px;
   padding-right: 10px;
 }
 
+#Items {
+  float:left;
+}
 
+#Buyers {
+  overflow:hidden;
+}
 
 
 
