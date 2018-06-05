@@ -16,11 +16,13 @@ class ItemsContainer extends Component {
     }
   
     componentDidMount() {
-      fetch('http://localhost:3000/api/org.quick.auction.Item')
-      .then(results => {
-        return results.json()
-      })
-      .then(data => this.setState({items: data}))
+        setInterval( () => {
+            fetch('http://localhost:3000/api/org.quick.auction.Item')
+            .then(results => {
+                return results.json()
+            })
+            .then(data => this.setState({items: data}))
+        }, 5000)
     }
   
     render() {
@@ -32,7 +34,7 @@ class ItemsContainer extends Component {
             <tr>
               <th>Name</th>
               <th>ID</th>
-              <th>Current Price</th>
+              <th>Value</th>
   
             </tr>
             
@@ -61,11 +63,13 @@ class ItemsContainer extends Component {
     }
   
     componentDidMount() {
-      fetch('http://localhost:3000/api/org.quick.auction.Buyer')
-      .then(results => {
-        return results.json()
-      })
-      .then(data => this.setState({buyers: data}))
+        setInterval( () => {
+            fetch('http://localhost:3000/api/org.quick.auction.Buyer')
+            .then(results => {
+                return results.json()
+            })
+            .then(data => this.setState({buyers: data}))
+        }, 5000)
     }
   
     render() {
@@ -93,6 +97,53 @@ class ItemsContainer extends Component {
     }
   }
 
+  class MarketplaceContainer extends Component {
+    constructor() {
+        super();
+        this.state = {
+          items: []
+        };
+      }
+    
+      componentDidMount() {
+        setInterval( () => {
+            fetch('http://localhost:3000/api/org.quick.auction.Item?filter=%7B%22where%22%3A%20%7B%22status%22%3A%22BEING_AUCTIONED%22%7D%7D')
+            .then(results => {
+            return results.json()
+            })
+            .then(data => this.setState({items: data}))
+        }, 5000)
+      }
+    
+      render() {
+        return (
+          <div className="ListContainer" id="Marketplace">
+            <h1>Up for Auction</h1>
+            <table>
+              <tbody>
+              <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Current Value</th>
+              <th>Contact</th>
+              </tr>
+              
+                {this.state.items.map(item => {
+                  return <tr>
+                    <td key={'items-${item.name}'}>{item.name}</td>
+                    <td key={'items-${item.itemId}'}>{item.itemId}</td>
+                    <td key={'items-${item.value}'}>${item.value}</td>
+                    <td key={'items-${item.owner}'}>{item.owner.substring(33)}</td>
+                  </tr>
+                })}
+            </tbody>
+            </table>
+          </div>
+          
+        );
+      }
+  }
+
   class BlockchainContainer extends Component {
     render() {
       return (
@@ -100,6 +151,7 @@ class ItemsContainer extends Component {
           <p>Registry Info</p>
           <ItemsContainer/>
           <BuyersContainer/>
+          <MarketplaceContainer/>
         </div>
         
       );
