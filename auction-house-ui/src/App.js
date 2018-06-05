@@ -3,9 +3,15 @@ import {
   Route,
   Link,
   BrowserRouter as Router,
+  
 } from 'react-router-dom';
 import logo from './logo.svg';
 import './App.css';
+import Client from './client'
+
+
+import BusinessNetworkConnection from 'composer-client';
+
 
 class Header extends Component {
   render() {
@@ -93,11 +99,55 @@ class LoginPage extends Component {
   }
 }
 
+class ItemsContainer extends Component {
+  constructor() {
+    super();
+    this.state = {
+      items: []
+    };
+  }
+
+  componentDidMount() {
+    fetch('http://localhost:3000/api/org.quick.auction.Item')
+    .then(results => {
+      return results.json()
+    })
+    .then(data => this.setState({items: data}))
+  }
+
+  render() {
+    return (
+      <div className="Items">
+        <h1>Items</h1>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Current Price</th>
+
+          </tr>
+          
+          {this.state.items.map(item => {
+            return <tr>
+              <td key={'items-${item.itemId}'}>{item.name}</td> 
+              <td>{item.itemId}</td>
+              <td>${item.value}</td>
+            </tr>
+          })}
+          
+        </table>
+      </div>
+      
+    );
+  }
+}
+
 class BlockchainContainer extends Component {
   render() {
     return (
       <div className="BlockchainContainer">
-        <p>This is just a container</p>
+        <p>Blockchain Info</p>
+        <ItemsContainer/>
       </div>
       
     );
@@ -124,11 +174,11 @@ class App extends Component {
           <li><Link to="/blockchain">Blockchain</Link></li>
           <li><Link to="/about">About</Link></li>          
         </ul>
+        </div>
 
         <Route path="/" exact component={LoginPage}/>
         <Route path="/blockchain" exact component={BlockchainContainer}/>
         <Route path="/about" exact component={AboutPage}/>
-      </div>
       </div>
     );
   }

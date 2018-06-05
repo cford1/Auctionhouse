@@ -1,100 +1,133 @@
 .Page {
-  background: url(https://www.coinannouncer.com/wp-content/uploads/2018/02/Pic.jpg) no-repeat center top;
   height: 100%;
   width: 100%;
   position: fixed;
+  background-color: white;
 
 }
 
 p {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Open Sans';
+  font-weight: 700;
   text-align: center;
-  color: white;
+  color: black;
 }
 
 .Nav {
   list-style-type: none;
   width: 100%;
   margin:auto;
-  margin-top:-17px;
-  background-color: rgba(3,3, 3,.7);
   text-align: center;
 }
 
 .Nav li {
   display: inline-block;
   width: 150px;
-  height: 50px;
-  color: white;
-  padding: 20px;
-  padding-top: 20px;
-  padding-bottom:0px;
+  height: 20px;
+  color: #17397B;
   text-align: center;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 20px;
-}
-
-.Nav li:hover {
-  background-color: rgba(150, 150, 150,.3);
+  font-size: 15px;
+  font-family: 'Montserrat';
+  font-weight: 700;
 }
 
 .Nav li a {
   text-decoration: none;
-  color: white;
+  color: #030397;
   width: 150px;
   height: 50px;
 }
 
 .Nav li a:visited {
-  color: white;
+  color: #17397B;
 }
 
+.Nav li a:hover {
+  color: black;
+}
 
+.Header {
+  background: url(https://www.coinannouncer.com/wp-content/uploads/2018/02/Pic.jpg) no-repeat center top;
+  height: 150px;
+  padding: 10px;
+  opacity: 0.9;
+}
 .Header p {
-  font-family: 'Roboto Slab', serif;
-  font-size: 70px;
+  font-size: 30px;
   color: white;
   line-height: 20px;
 }
 
 .Login {
-  color: white;
-  background-color: rgba(3,3,3,.7);
   width: 30%;
   margin: auto;
-  padding-bottom: 30px;
   text-align: center;
 
 }
 
 .Login-text {
   color: #ffffff;
-  height: 50px;
   width: 200px;
-  padding: 12px;
   display: inline-block;
+  font-size: 13px;
 }
 
 .LoginField {
   margin: auto;
   width: 200px;
+  font-size: 13px;
 }
 
 .Login-submit {
   margin:auto;
-  margin-top: 10%;
-  padding-top: 1px;
   height: 50px;
   width: 100px;
-  background-color: rgba(150, 150, 150, .3);
+  color: #17397B;
   border-width: 0px;
-  color: white;
-  font-family: "Open Sans", sans-serif;
-  font-size: 15px;
+  font-family: 'Open Sans';
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .Login-submit:hover {
-  background-color: rgba(150, 150, 150, .7);
+  color: black;
+}
+
+.Items {
+  display: inline-block;
+  text-align: left;
+  width: 50%;
+  margin-left: 10px;
+  border-width: 3px;
+  border-left-style: solid;
+  border-color: #F27731;
+  padding-left: 10px;
+}
+.Items h1{
+  font-family: 'Montserrat';
+  font-size: 17px;
+  color: #17397B;
+  text-decoration: underline;
+}
+
+.Items table {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+}
+
+.Items table tr {
+  height: 30px;
+}
+
+.Items table th {
+  font-weight: 700;
+  padding-bottom: 10px;
+  padding-right: 10px;
+}
+
+.Items table td {
+  padding-bottom: 10px;
+  padding-right: 10px;
 }
 
 

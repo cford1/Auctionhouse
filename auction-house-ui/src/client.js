@@ -14,9 +14,20 @@ function create(type, data) {
     })
 }
 
+function search(query, cb) {
+    return new Promise( (resolve,reject) => {
+        return fetch(`api/${query}`, {
+            accept: "application/json"
+        })
+            .then(parseJSON)
+            .then(data => resolve(data));
+    })
+
+}
+
 function parseJSON(response) {
     return response.json();
 }
 
-const Client = { create };
+const Client = { create, search };
 export default Client;

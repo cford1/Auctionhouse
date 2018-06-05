@@ -1,0 +1,16 @@
+#!/bin/bash
+
+read -p 'version: ' version
+
+docker kill $(docker ps -q) && docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
+
+
+(cd ~/fabric-dev-servers && ./stopFabric.sh && ./tearDownFabric.sh) && rm -Rf ~/.composer
+(cd ~/fabric-dev-servers && ./createPeerAdminCard.sh && ./startFabric.sh)
+
+composer archive create -t dir -n .
+composer network install --card PeerAdmin@hlfv1 --archiveFile auction-service@$version.bna
+composer network start --networkName auction-service --networkVersion $version --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkadmin.card
+composer card import --file networkadmin.card
+#composer network ping --card admin@auction-service
+#composer network upgrade -c PeerAdmin@hlfv1 -n auction-service -V $version
