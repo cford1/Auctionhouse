@@ -1,7 +1,6 @@
 .Page {
   height: 100%;
   width: 100%;
-  position: fixed;
   background-color: white;
 
 }
@@ -93,6 +92,40 @@ p {
   color: black;
 }
 
+.RegFields {
+  margin: auto;
+  font-size: 13px;
+  line-height: 0px;
+  width: 50%;
+  text-align: center;
+  overflow: auto;
+  display:block;
+}
+
+.RegFields > .UserPass {
+  float:left;
+}
+
+.RegFields > .Address {
+  margin-left: 30px;
+  display: inline-block;
+
+}
+
+.RegFields > .Reg-submit {
+  margin:auto;
+  padding-top: 20px;
+  color: #17397B;
+  border-width: 0px;
+  font-family: 'Open Sans';
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.Reg-submit:hover {
+  color: black;
+}
+
 h1{
   font-family: 'Montserrat';
   font-size: 17px;
@@ -103,7 +136,6 @@ h1{
 .ListContainer {
   display: inline-block;
   text-align: left;
-  width: 50%;
   margin-left: 10px;
   border-width: 3px;
   border-left-style: solid;
@@ -131,6 +163,6 @@ table td {
   padding-right: 10px;
 }
 
-
-
-
+#Transactions table {
+  font-size: 10px;
+}
