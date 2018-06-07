@@ -46,6 +46,74 @@ class RequestAuctionButton extends Component {
   }
 }
 
+class AddItemForm extends Component {
+  constructor() {
+    super();
+    this.state = {
+      name: "",
+      id: "",
+      price: "",
+      owner: ""
+    }
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    console.log(JSON.stringify({
+      "$class": "org.quick.auction.AddItem",
+      "itemId": this.state.id,
+      "name": this.state.name,
+      "value": this.state.value,
+      "owner": "resource:org.quick.auction.Seller#" + this.state.owner,
+      "transactionId": "",
+      "timestamp": (new Date()).toISOString()
+    }));
+
+    fetch('http://localhost:3000/api/org.quick.auction.AddItem', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "$class": "org.quick.auction.AddItem",
+        "name": this.state.name,
+        "itemId": this.state.id,
+        "value": this.state.price,
+        "owner": "resource:org.quick.auction.Seller#" + this.state.owner,
+        "transactionId": "",
+        "timestamp": (new Date()).toISOString()
+      }),
+    })
+  }
+
+  render() {
+    return (
+      <div className="ItemFields">
+        <p>Item Name:</p>
+        <input type="text" name="name" onChange={this.handleChange} />
+        <p>Item ID:</p>
+        <input type="text" name="id" onChange={this.handleChange} />
+        <p>Price:</p>
+        <input type="text" name="price" onChange={this.handleChange} />
+        <p>Owner Email:</p>
+        <input type="text" name="owner" onChange={this.handleChange} />
+        <br />
+        <input class="Item-submit" type="submit" name="SUBMIT" onClick={this.handleSubmit.bind(this)} onSubmit={this.handleSubmit.bind(this)} />
+      </div>
+
+    );
+  }
+
+}
+
+
 
 class ItemsContainer extends Component {
   constructor() {
@@ -53,7 +121,6 @@ class ItemsContainer extends Component {
     this.state = {
       items: [],
     };
-    this.handleRequestAuction = this.handleRequestAuction.bind(this);
   }
 
   componentDidMount() {
@@ -69,26 +136,6 @@ class ItemsContainer extends Component {
         })
         .then(data => this.setState({ items: data }))
     }, interval)
-  }
-
-  handleRequestAuction(e) {
-    var item = e.target.value;
-    fetch('http://localhost:3000/api/org.quick.auction.RequestAuction', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        "$class": "org.quick.auction.RequestAuction",
-        "auctioner": "resource:org.quick.auction.Auctioner#auctioner@email.com",
-        "seller": "resource:org.quick.auction.Seller#" + item.substring(item.indexOf("#") + 1),
-        "item": "resource:org.quick.auction.Item#" + item.substring(0, item.indexOf(",")),
-        "transactionId": "",
-        "timestamp": (new Date()).toISOString()
-      })
-    })
-
   }
 
   render() {
@@ -114,6 +161,7 @@ class ItemsContainer extends Component {
             })}
           </tbody>
         </table>
+        <AddItemForm />
       </div>
 
     );
