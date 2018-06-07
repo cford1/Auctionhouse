@@ -12,8 +12,9 @@ class ItemsContainer extends Component {
   constructor() {
     super();
     this.state = {
-      items: []
+      items: [],
     };
+    this.handleRequestAuction = this.handleRequestAuction.bind(this);
   }
 
   componentDidMount() {
@@ -31,9 +32,29 @@ class ItemsContainer extends Component {
     }, interval)
   }
 
+  handleRequestAuction(e) {
+    var item = e.target.value;
+    fetch('http://localhost:3000/api/org.quick.auction.RequestAuction', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "$class": "org.quick.auction.RequestAuction",
+        "auctioner": "resource:org.quick.auction.Auctioner#auctioner@email.com",
+        "seller": "resource:org.quick.auction.Seller#" + item.substring(item.indexOf("#") + 1),
+        "item": "resource:org.quick.auction.Item#" + item.substring(0, item.indexOf(",")),
+        "transactionId": "",
+        "timestamp": (new Date()).toISOString()
+      })
+    })
+
+  }
+
   render() {
     return (
-      <div className="ListContainer" id="Items">
+      <div className="ListContainer" id="Items" >
         <h1>Items</h1>
         <table>
           <tbody>
@@ -49,6 +70,7 @@ class ItemsContainer extends Component {
                 <td key={'items-${item.name}'}>{item.name}</td>
                 <td key={'items-${item.itemId}'}>{item.itemId}</td>
                 <td key={'items-${item.value}'}>${item.value}</td>
+                <td><button value={[item.itemId, item.owner]} onClick={this.handleRequestAuction}>Request Auction</button></td>
               </tr>
             })}
           </tbody>
