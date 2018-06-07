@@ -8,6 +8,45 @@ import {
 
 var interval = 3000;
 
+class RequestAuctionButton extends Component {
+  constructor() {
+    super();
+
+    this.handleRequestAuction = this.handleRequestAuction.bind(this);
+  }
+
+  handleRequestAuction() {
+    var item = this.props.value;
+    fetch('http://localhost:3000/api/org.quick.auction.RequestAuction', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "$class": "org.quick.auction.RequestAuction",
+        "auctioner": "resource:org.quick.auction.Auctioner#auctioner@email.com",
+        "seller": "resource:org.quick.auction.Seller#" + item[1].substring(item[1].indexOf("#") + 1),
+        "item": "resource:org.quick.auction.Item#" + item[0],
+        "transactionId": "",
+        "timestamp": (new Date()).toISOString()
+      })
+    })
+  }
+
+
+  render() {
+    if (this.props.value[2] === "NEW") {
+      return (
+        <button onClick={this.handleRequestAuction}>Request Auction</button>
+      );
+    } else {
+      return null;
+    }
+  }
+}
+
+
 class ItemsContainer extends Component {
   constructor() {
     super();
@@ -70,7 +109,7 @@ class ItemsContainer extends Component {
                 <td key={'items-${item.name}'}>{item.name}</td>
                 <td key={'items-${item.itemId}'}>{item.itemId}</td>
                 <td key={'items-${item.value}'}>${item.value}</td>
-                <td><button value={[item.itemId, item.owner]} onClick={this.handleRequestAuction}>Request Auction</button></td>
+                <td><RequestAuctionButton value={[item.itemId, item.owner, item.status]} /></td>
               </tr>
             })}
           </tbody>
@@ -171,7 +210,7 @@ class MarketplaceContainer extends Component {
                 <td key={'items-${item.name}'}>{item.name}</td>
                 <td key={'items-${item.itemId}'}>{item.itemId}</td>
                 <td key={'items-${item.value}'}>${item.value}</td>
-                <td key={'items-${item.owner}'}>{item.owner.substring(33)}</td>
+                <td key={'items-${item.owner}'}>{item.owner.substring(item.owner.indexOf("#") + 1)}</td>
               </tr>
             })}
           </tbody>
