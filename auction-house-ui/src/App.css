@@ -28,13 +28,13 @@ p {
   font-size: 15px;
   font-family: 'Montserrat';
   font-weight: 700;
+  vertical-align: middle;
 }
 
 .Nav li a {
   text-decoration: none;
   color: #030397;
   width: 150px;
-  height: 50px;
 }
 
 .Nav li a:visited {
@@ -43,6 +43,13 @@ p {
 
 .Nav li a:hover {
   color: black;
+}
+
+#logo {
+  height: 120px;
+  width: 300px;
+  background: url('./images/cmci_logo.png') no-repeat;
+  margin-top:0px;
 }
 
 .Header {
@@ -96,25 +103,26 @@ p {
   margin: auto;
   font-size: 13px;
   line-height: 0px;
-  width: 50%;
+  width: 500px;
   text-align: center;
   overflow: auto;
   display:block;
 }
 
 .RegFields > .UserPass {
+  margin-left: 70px;
   float:left;
 }
 
 .RegFields > .Address {
-  margin-left: 30px;
+  margin-left: 50px;
   display: inline-block;
 
 }
 
 .RegFields > .Reg-submit {
   margin:auto;
-  padding-top: 20px;
+  margin-top: 30px;
   color: #17397B;
   border-width: 0px;
   font-family: 'Open Sans';
@@ -123,6 +131,30 @@ p {
 }
 
 .Reg-submit:hover {
+  color: black;
+}
+
+.ItemFields {
+  font-size: 12px;
+  line-height: 0px;
+  float: left;
+}
+
+.ItemFields p {
+  text-align: left;
+}
+
+.ItemFields > .Item-submit {
+  margin:auto;
+  margin-top: 10px;
+  color: #17397B;
+  border-width: 0px;
+  font-family: 'Open Sans';
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.Item-submit:hover {
   color: black;
 }
 

@@ -26,6 +26,7 @@ class RegEntryFields extends Component {
       name: "",
       email: "",
       accountBalance: "",
+      status: "",
       street: "",
       city: "",
       st: "",
@@ -40,23 +41,6 @@ class RegEntryFields extends Component {
   }
 
   handleSubmit(event) {
-    console.log(this);
-    console.log(JSON.stringify({
-      "$class": "org.quick.auction.AddBusiness",
-      "email": this.state.email,
-      "name": this.state.name,
-      "accountBalance": parseInt(this.state.accountBalance),
-      "address": {
-        "$class": "org.quick.auction.Address",
-        "street": this.state.street,
-        "city": this.state.city,
-        "state": this.state.st,
-        "zip": this.state.zip,
-      },
-      "status": "Buyer",
-      "transactionId": "",
-      "timestamp": (new Date()).toISOString()
-    }));
     event.preventDefault();
     return fetch('http://localhost:3000/api/org.quick.auction.AddBusiness', {
       method: 'POST',
@@ -76,52 +60,38 @@ class RegEntryFields extends Component {
           "state": this.state.st,
           "zip": this.state.zip,
         },
-        "status": "Buyer",
+        "status": this.state.status,
         "transactionId": "",
         "timestamp": (new Date()).toISOString()
       }),
-    })
-      .then(() => {
-        console.log(JSON.stringify(
-          {
-            "participant": "resource:org.quick.auction.Buyer#" + this.state.email,
-            "userID": this.state.email,
-            "options": {}
-          }
-        ))
-
-
-        return fetch('http://localhost:3000/api/system/identities/issue', {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(
-            {
-              "participant": "resource:org.quick.auction.Buyer#" + this.state.email,
-              "userID": this.state.email,
-              "options": {}
-            }
-          ),
-        });
-
-
+    }).then(() => {
+      return fetch('http://localhost:3000/api/system/identities/issue', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "participant": "resource:org.quick.auction." + this.state.status + "#" + this.state.email,
+          "userID": this.state.email,
+          "options": {}
+        }
+        ),
       });
+    });
 
-    /*this.setState(
-        {
-          name: "",
-          email: "",
-          accountBalance: "",
-          street: "",
-          city: "",
-          st: "",
-          zip: ""
-        });*/
+    this.setState({
+      name: "",
+      email: "",
+      accountBalance: "",
+      status: "",
+      street: "",
+      city: "",
+      st: "",
+      zip: ""
+    });
+    this.props.history.push("/blockchain");
   }
-
-
 
   render() {
     return (
@@ -133,9 +103,11 @@ class RegEntryFields extends Component {
           <input type="text" name="email" onChange={this.handleChange} />
           <p>Account balance:</p>
           <input type="text" name="accountBalance" onChange={this.handleChange} />
+          <p>Buyer/Seller:</p>
+          <input type="text" name="status" onChange={this.handleChange} />
         </div>
         <div className="Address">
-          <p>Street:</p>
+          <p>Street Address:</p>
           <input type="text" name="street" onChange={this.handleChange} />
           <p>City:</p>
           <input type="text" name="city" onChange={this.handleChange} />
@@ -145,7 +117,7 @@ class RegEntryFields extends Component {
           <input type="text" name="zip" onChange={this.handleChange} />
         </div>
         <br />
-        <input class="Reg-submit" type="submit" name="SUBMIT" onClick={this.handleSubmit.bind(this)} />
+        <input class="Reg-submit" type="submit" name="SUBMIT" onClick={this.handleSubmit.bind(this)} onSubmit={this.handleSubmit.bind(this)} />
       </div>
     );
   }
