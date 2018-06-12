@@ -6,7 +6,7 @@ import {
 
 } from 'react-router-dom';
 
-var interval = 3000;
+var interval = 1000;
 
 class RequestAuctionButton extends Component {
   constructor() {
@@ -217,6 +217,130 @@ class BuyersContainer extends Component {
   }
 }
 
+class BidButton extends Component {
+  constructor() {
+    super();
+    this.state = {
+      bidAmount: "",
+      buyer: "",
+      itemId: ""
+    }
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    console.log(JSON.stringify({
+      "$class": "org.quick.auction.Bid",
+      "bidAmount": this.state.bidAmount,
+      "item": "resource:org.quick.auction.Item#" + this.state.itemId,
+      "auctioner": "resource:org.quick.auction.Auctioner#auctioner@email.com",
+      "bidder": "resource:org.quick.auction.Buyer#" + this.state.buyer,
+      "transactionId": "",
+      "timestamp": (new Date()).toISOString()
+    }));
+
+    fetch('http://localhost:3000/api/org.quick.auction.Bid', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "$class": "org.quick.auction.Bid",
+        "bidAmount": this.state.bidAmount,
+        "item": "resource:org.quick.auction.Item#" + this.state.itemId,
+        "auctioner": "resource:org.quick.auction.Auctioner#auctioner@email.com",
+        "bidder": "resource:org.quick.auction.Buyer#" + this.state.buyer,
+        "transactionId": "",
+        "timestamp": (new Date()).toISOString()
+      }),
+    })
+  }
+
+  render() {
+    return (
+      <div className="BidFields">
+        <p>Bid Amount:</p>
+        <input type="text" name="bidAmount" onChange={this.handleChange} />
+        <p>Buyer Email:</p>
+        <input type="text" name="buyer" onChange={this.handleChange} />
+        <p>Item ID:</p>
+        <input type="text" name="itemId" onChange={this.handleChange} />
+        <br />
+        <input class="Bid-submit" type="submit" name="SUBMIT" onClick={this.handleSubmit.bind(this)} onSubmit={this.handleSubmit.bind(this)} />
+      </div>
+
+    );
+  }
+
+}
+
+class AcceptBidButton extends Component {
+  constructor() {
+    super();
+    this.state = {
+      seller: "",
+      itemId: ""
+    }
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    console.log(JSON.stringify({
+      "$class": "org.quick.auction.AcceptBid",
+      "seller": "resource:org.quick.auction.Seller#" + this.state.seller,
+      "auctioner": "resource:org.quick.auction.Auctioner#auctioner@email.com",
+      "item": "resource:org.quick.auction.Item#" + this.state.itemId,
+      "transactionId": "",
+      "timestamp": (new Date()).toISOString()
+    }));
+
+    fetch('http://localhost:3000/api/org.quick.auction.AcceptBid', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "$class": "org.quick.auction.AcceptBid",
+        "seller": "resource:org.quick.auction.Seller#" + this.state.seller,
+        "auctioner": "resource:org.quick.auction.Auctioner#auctioner@email.com",
+        "item": "resource:org.quick.auction.Item#" + this.state.itemId,
+        "transactionId": "",
+        "timestamp": (new Date()).toISOString()
+      }),
+    })
+  }
+
+  render() {
+    return (
+      <div className="AcceptBidFields">
+        <p>Accept Bid:</p>
+        <p>Seller Email:</p>
+        <input type="text" name="seller" onChange={this.handleChange} />
+        <p>Item ID:</p>
+        <input type="text" name="itemId" onChange={this.handleChange} />
+        <br />
+        <input class="AcceptBid-submit" type="submit" name="SUBMIT" onClick={this.handleSubmit.bind(this)} onSubmit={this.handleSubmit.bind(this)} />
+      </div>
+
+    );
+  }
+
+}
+
 class MarketplaceContainer extends Component {
   constructor() {
     super();
@@ -237,7 +361,11 @@ class MarketplaceContainer extends Component {
           return results.json()
         })
         .then(data => this.setState({ items: data }))
+        .then(fetch('http://localhost:3000/api/org.quick.auction.Auctioner')
+
+        )
     }, interval)
+
   }
 
   render() {
@@ -257,12 +385,14 @@ class MarketplaceContainer extends Component {
               return <tr>
                 <td key={'items-${item.name}'}>{item.name}</td>
                 <td key={'items-${item.itemId}'}>{item.itemId}</td>
-                <td key={'items-${item.value}'}>${item.value}</td>
+                <td key={'items-${item.value}'}>${item.marketValue}</td>
                 <td key={'items-${item.owner}'}>{item.owner.substring(item.owner.indexOf("#") + 1)}</td>
               </tr>
             })}
           </tbody>
         </table>
+        <BidButton />
+        <AcceptBidButton />
       </div>
 
     );

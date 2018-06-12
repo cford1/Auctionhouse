@@ -198,3 +198,53 @@ table td {
 #Transactions table {
   font-size: 10px;
 }
+
+
+.BidFields {
+  font-size: 12px;
+  line-height: 0px;
+  float: left;
+}
+
+.BidFields p {
+  text-align: left;
+}
+
+.BidFields > .Bid-submit {
+  margin:auto;
+  margin-top: 10px;
+  color: #17397B;
+  border-width: 0px;
+  font-family: 'Open Sans';
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.Bid-submit:hover {
+  color: black;
+}
+
+.AcceptBidFields {
+  font-size: 12px;
+  line-height: 0px;
+  float: right;
+  
+}
+
+.AcceptBidFields p {
+  text-align: left;
+}
+
+.AcceptBidFields > .AcceptBid-submit {
+  margin:auto;
+  margin-top: 10px;
+  color: #17397B;
+  border-width: 0px;
+  font-family: 'Open Sans';
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.AcceptBid-submit:hover {
+  color: black;
+}
