@@ -19,6 +19,7 @@ asset Item identified by itemId {
   o Double value
   --> Business owner
   o AuctionStatus status
+  o Double marketValue optional
 }
 
 enum AuctionStatus {
@@ -80,6 +81,7 @@ transaction RequestAuction {
 
 transaction Bid {
   o Double bidAmount
+  --> Item item
   --> Auctioner auctioner
   --> Business bidder
 }
