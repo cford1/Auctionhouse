@@ -266,6 +266,8 @@ class BidButton extends Component {
   render() {
     return (
       <div className="BidFields">
+        <p>Bid</p>
+        <br />
         <p>Bid Amount:</p>
         <input type="text" name="bidAmount" onChange={this.handleChange} />
         <p>Buyer Email:</p>
@@ -327,7 +329,8 @@ class AcceptBidButton extends Component {
   render() {
     return (
       <div className="AcceptBidFields">
-        <p>Accept Bid:</p>
+        <p>Accept Bid</p>
+        <br />
         <p>Seller Email:</p>
         <input type="text" name="seller" onChange={this.handleChange} />
         <p>Item ID:</p>

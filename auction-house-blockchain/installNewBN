@@ -12,5 +12,7 @@ composer archive create -t dir -n .
 composer network install --card PeerAdmin@hlfv1 --archiveFile auction-service@$version.bna
 composer network start --networkName auction-service --networkVersion $version --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkadmin.card
 composer card import --file networkadmin.card
+composer-rest-server -c admin@auction-service -n always -w true && composer-playground
+
 #composer network ping --card admin@auction-service
 #composer network upgrade -c PeerAdmin@hlfv1 -n auction-service -V $version
