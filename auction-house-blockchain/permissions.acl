@@ -152,16 +152,6 @@ rule AuctionerRequestAuction {
     action: DENY
 }
 
-rule AuctionerAcceptAuction {
-    description: "Auctioners cannot request an item to be auctioned"
-    participant: "org.quick.auction.Auctioner"
-    operation: ALL
-    resource(r): "org.quick.auction.Item"
-    transaction(tx): "org.quick.auction.AcceptAuction"
-    condition: (r.status.equals("REQUESTED_FOR_AUCTION"))
-    action: DENY
-}
-
 rule SellerAcceptBid {
     description: "Sellers CAN accept a pending bid on an item"
     participant(p): "org.quick.auction.Seller"
