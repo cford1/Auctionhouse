@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 
+
  rule NoPrivateInfo {
     description: "People can't see others' private info"
     participant(p): "org.quick.auction.Business"
@@ -112,13 +113,23 @@ rule NetworkAdminSystem {
 }
 
 rule SellerRequestAuction {
-    description: "Sellers CAN request an item to be auctioned"
-    participant: "org.quick.auction.Seller"
+    description: "Buyers cannot request an item to be auctioned"
+    participant: "org.quick.auction.Buyer"
     operation: ALL
     resource: "**"
     transaction(tx): "org.quick.auction.RequestAuction"
     condition: (true)
     action: ALLOW
+}
+
+rule ItemAuction {
+    description: "Items that aren't new cant be requested to be auctioned"
+    participant: "org.quick.auction.**"
+    operation: ALL
+    resource(r): "org.quick.auction.Item"
+    transaction(tx): "org.quick.auction.RequestAuction"
+    condition: (!r.status.equals("NEW"))
+    action: DENY
 }
 
 rule BuyerRequestAuction {
@@ -141,13 +152,23 @@ rule AuctionerRequestAuction {
     action: DENY
 }
 
+rule AuctionerAcceptAuction {
+    description: "Auctioners cannot request an item to be auctioned"
+    participant: "org.quick.auction.Auctioner"
+    operation: ALL
+    resource(r): "org.quick.auction.Item"
+    transaction(tx): "org.quick.auction.AcceptAuction"
+    condition: (r.status.equals("REQUESTED_FOR_AUCTION"))
+    action: DENY
+}
+
 rule SellerAcceptBid {
     description: "Sellers CAN accept a pending bid on an item"
-    participant: "org.quick.auction.Seller"
+    participant(p): "org.quick.auction.Seller"
     operation: ALL
-    resource: "**"
+    resource(r): "org.quick.auction.Item"
     transaction(tx): "org.quick.auction.AcceptBid"
-    condition: (true)
+    condition: (r.owner == p)
     action: ALLOW
 }
 
