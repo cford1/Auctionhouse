@@ -5,6 +5,7 @@ import {
   BrowserRouter as Router,
 
 } from 'react-router-dom';
+import cryptoJS from "crypto-js";
 
 var interval = 1000;
 
@@ -406,7 +407,8 @@ class TransactionContainer extends Component {
   constructor() {
     super();
     this.state = {
-      transactions: []
+      transactions: [],
+      transactionHash: []
     };
   }
 
@@ -422,10 +424,17 @@ class TransactionContainer extends Component {
           return results.json()
         })
         .then(data => this.setState({ transactions: data }))
+        let newHash = cryptoJS.SHA3(this.state.transactions.toString()).toString();
+        if(this.state.transactions.length % 4 == 0 && !this.state.transactionHash.includes(newHash)) {
+          let newArray = this.state.transactionHash;
+          newArray.push(newHash);
+          this.setState({ transactionHash:  newArray});
+        }
     }, interval)
   }
 
   render() {
+    console.log(this.state);
     return (
       <div className="ListContainer" id="Transactions">
         <h1>Transaction Log</h1>
@@ -442,6 +451,10 @@ class TransactionContainer extends Component {
                 <td key={'transactions-${transaction.transactionTimestamp'}>{transaction.transactionTimestamp}</td>
               </tr>
             })}
+            <tr>
+              <td>Transaction Checkpoint</td>
+              <td> {this.state.transactionHash[this.state.transactionHash.length - 1]}</td>
+            </tr>
           </tbody>
         </table>
       </div>
