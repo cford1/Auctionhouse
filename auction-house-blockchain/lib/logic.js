@@ -127,6 +127,9 @@ async function purchaseItem(purchase) {
 * @transaction
 */
 async function requestAuction(request) {
+    if (request.seller != request.item.owner) {
+        throw new Error('Item does not belong to seller');
+    }
     request.item.status = "BEING_AUCTIONED";
     request.auctioner.itemForBid = request.item;
     request.auctioner.currentValueOfItemForBid = request.item.value;
@@ -164,6 +167,9 @@ var contractNum = 0;
 * @transaction
 */
 async function acceptBid(purchase) {
+    if (purchase.item.owner != purchase.seller) {
+        throw new Error('Item does not belong to seller');
+    }
     var buyer = purchase.auctioner.highestBidder;
     var newVal = purchase.auctioner.currentValueOfItemForBid;
     purchase.seller.pinf.accountBalance += newVal;
