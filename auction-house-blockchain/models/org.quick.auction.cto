@@ -26,6 +26,7 @@ enum AuctionStatus {
   o NEW
   o SOLD
   o BEING_AUCTIONED
+  o REQUESTED_FOR_AUCTION
 }
 
 concept Address {
@@ -74,8 +75,10 @@ transaction Purchase {
 }
 
 transaction RequestAuction {
-  --> Auctioner auctioner
-  --> Seller seller
+  --> Item item
+}
+
+transaction AcceptAuctionRequest {
   --> Item item
 }
 
@@ -83,32 +86,9 @@ transaction Bid {
   o Double bidAmount
   --> Item item
   --> Auctioner auctioner
-  --> Business bidder
 }
 
 transaction AcceptBid {
-  --> Seller seller
   --> Auctioner auctioner
   --> Item item
-}
-
-transaction AddBusiness {
-  o String email
-  o String name
-  o Double accountBalance
-  o Address address
-  o String status
-}
-
-transaction AddItem {
-  o String name
-  o String itemId
-  o Double value
-  --> Seller owner
-}
-
-transaction ChangeAccess {
-  --> Business owner
-  --> Business recipient
-  o String permission
 }

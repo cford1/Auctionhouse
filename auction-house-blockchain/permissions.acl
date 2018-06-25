@@ -13,15 +13,6 @@
  */
 
 
- rule NoPrivateInfo {
-    description: "People can't see others' private info"
-    participant(p): "org.quick.auction.Business"
-    operation: ALL
-    resource(r): "org.quick.auction.PrivateInfo"
-    condition: (p.email != r.email)
-    action: DENY
- }
-
 
 rule SellerAddItems {
     description: "Sellers can add an item"
@@ -36,14 +27,6 @@ rule AuctionerContracts {
   participant: "org.quick.auction.Auctioner"
   operation: ALL
   resource: "org.quick.auction.Contract"
-  action: ALLOW
-}
-
-rule AuctionerEverything {
-  description: "Auctioners can see everything"
-  participant: "org.quick.auction.Auctioner"
-  operation: READ
-  resource: "org.quick.auction.*"
   action: ALLOW
 }
 
@@ -72,25 +55,10 @@ rule BuyerSellerItems {
     action: ALLOW
 }
 
-rule NetworkBuyerUser {
-    description: "Grant business network buyers read access to user resources"
-    participant: "org.quick.auction.Buyer"
-    operation: READ
-    resource: "**"
-    action: ALLOW
-}
-
-rule NetworkSellerUser {
-    description: "Grant business network sellers read access to user resources"
-    participant: "org.quick.auction.Seller"
-    operation: READ
-    resource: "**"
-    action: ALLOW
-}
 
 rule NetworkAuctionerUser {
     description: "Grant business network auctioners full access to user resources"
-    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    participant: "org.quick.auction.Auctioner"
     operation: ALL
     resource: "**"
     action: ALLOW
@@ -113,101 +81,125 @@ rule NetworkAdminSystem {
 }
 
 rule SellerRequestAuction {
-    description: "Buyers cannot request an item to be auctioned"
-    participant: "org.quick.auction.Buyer"
+    description: "Sellers can create a request auction transaction"
+    participant: "org.quick.auction.Seller"
     operation: ALL
-    resource: "**"
-    transaction(tx): "org.quick.auction.RequestAuction"
-    condition: (true)
+    resource: "org.quick.auction.RequestAuction"
     action: ALLOW
 }
 
-rule ItemAuction {
-    description: "Items that aren't new cant be requested to be auctioned"
-    participant: "org.quick.auction.**"
+rule SellerUpdateHistorianRecord {
+    description: "Sellers may update the historian record if they are creating an auction request"
+    participant: "org.quick.auction.Seller"
     operation: ALL
-    resource(r): "org.quick.auction.Item"
-    transaction(tx): "org.quick.auction.RequestAuction"
-    condition: (!r.status.equals("NEW"))
-    action: DENY
-}
-
-rule BuyerRequestAuction {
-    description: "Buyers cannot request an item to be auctioned"
-    participant: "org.quick.auction.Buyer"
-    operation: ALL
-    resource: "**"
-    transaction(tx): "org.quick.auction.RequestAuction"
-    condition: (true)
-    action: DENY
-}
-
-rule AuctionerRequestAuction {
-    description: "Auctioners cannot request an item to be auctioned"
-    participant: "org.quick.auction.Auctioner"
-    operation: ALL
-    resource: "**"
-    transaction(tx): "org.quick.auction.RequestAuction"
-    condition: (true)
-    action: DENY
-}
-
-rule SellerAcceptBid {
-    description: "Sellers CAN accept a pending bid on an item"
-    participant(p): "org.quick.auction.Seller"
-    operation: ALL
-    resource(r): "org.quick.auction.Item"
-    transaction(tx): "org.quick.auction.AcceptBid"
-    condition: (r.owner == p)
+    resource: "org.hyperledger.composer.system.HistorianRecord"
+    transaction: "org.quick.auction.RequestAuction"
     action: ALLOW
 }
 
-rule BuyerAcceptBid {
-    description: "Buyers cannot accept a pending bid on an item"
-    participant: "org.quick.auction.Buyer"
-    operation: ALL
-    resource: "**"
-    transaction(tx): "org.quick.auction.AcceptBid"
-    condition: (true)
-    action: DENY
-}
-
-rule AuctionerAcceptBid {
-    description: "Auctioners cannot accept a pending bid on an item"
+rule AuctionerAcceptAuctionRequest {
+  description: "Auctioners can accept an auction request"
     participant: "org.quick.auction.Auctioner"
     operation: ALL
-    resource: "**"
-    transaction(tx): "org.quick.auction.AcceptBid"
-    condition: (true)
-    action: DENY
+    resource: "org.quick.auction.AcceptAuctionRequest"
+    action: ALLOW
 }
+
+rule AuctionerUpdateHistorianRecord {
+    description: "Auctioners may update the historian record if they are accepting an auction request"
+    participant: "org.quick.auction.Auctioner"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.HistorianRecord"
+    transaction: "org.quick.auction.AcceptAuctionRequest"
+    action: ALLOW
+}
+
 
 rule BuyerBid {
     description: "Buyers CAN bid on an item"
     participant: "org.quick.auction.Buyer"
     operation: ALL
-    resource: "**"
-    transaction(tx): "org.quick.auction.Bid"
-    condition: (true)
+    resource: "org.quick.auction.Bid"
     action: ALLOW
 }
 
-rule SellerBid {
-    description: "Sellers cannot bid on an item"
+rule BuyerUpdateHistorianRecord {
+    description: "Buyers may update the historian record if they are bidding on an item"
+    participant: "org.quick.auction.Buyer"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.HistorianRecord"
+    transaction: "org.quick.auction.Bid"
+    action: ALLOW
+}
+
+rule BuyerUpdateAuctionerInfo {
+    description: "Buyer may update auctioner info if they are bidding on an item"
+    participant: "org.quick.auction.Buyer"
+    operation: ALL
+    resource: "**"
+    transaction: "org.quick.auction.Bid"
+    action: ALLOW
+}
+
+
+
+
+rule SellerAcceptBid {
+    description: "Sellers CAN accept a pending bid on an item"
+    participant: "org.quick.auction.Seller"
+    operation: ALL
+    resource: "org.quick.auction.AcceptBid"
+   action: ALLOW
+}
+
+rule SellerUpdateHistorianRecord2 {
+    description: "Sellers may update the historian record if they are accepting a bid"
+    participant: "org.quick.auction.Seller"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.HistorianRecord"
+    transaction: "org.quick.auction.AcceptBid"
+    action: ALLOW
+}
+
+rule SellerUpdateBuyerAuctionerInfo {
+    description: "Sellers may update buyer/auctioner info if they are accepting a bid"
     participant: "org.quick.auction.Seller"
     operation: ALL
     resource: "**"
-    transaction(tx): "org.quick.auction.Bid"
-    condition: (true)
-    action: DENY
+    transaction: "org.quick.auction.AcceptBid"
+    action: ALLOW
 }
 
-rule AuctionerBid {
-    description: "Auctioners cannot bid on an item"
-    participant: "org.quick.auction.Auctioner"
+rule SellerUpdateBuyerPrivateInfo {
+    description: "Seller can update buyer private info if they are accepting a bid"
+    participant: "org.quick.auction.Business"
     operation: ALL
-    resource: "**"
-    transaction(tx): "org.quick.auction.Bid"
-    condition: (true)
+    resource: "org.quick.auction.PrivateInfo"
+    transaction: "org.quick.auction.AcceptBid"
+    action: ALLOW
+ }
+
+ rule NoPrivateInfo {
+    description: "People can't see others' private info"
+    participant(p): "org.quick.auction.Business"
+    operation: ALL
+    resource(r): "org.quick.auction.PrivateInfo"
+    condition: (p.email != r.email)
     action: DENY
+ }
+
+ rule NetworkBuyerUser {
+    description: "Grant business network buyers read access to user resources"
+    participant: "org.quick.auction.Buyer"
+    operation: READ
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkSellerUser {
+    description: "Grant business network sellers read access to user resources"
+    participant: "org.quick.auction.Seller"
+    operation: READ
+    resource: "**"
+    action: ALLOW
 }

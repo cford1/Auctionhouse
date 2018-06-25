@@ -27,6 +27,15 @@ function demoMode(demoMode) {
     item2.status = 'NEW';
     item2.owner = factory.newRelationship(nameSpace, 'Buyer', 'buyer@email.com');
 
+
+
+    var buyer_pinf = factory.newResource(nameSpace, 'PrivateInfo', "buyer@email.com");
+    var seller_pinf = factory.newResource(nameSpace, 'PrivateInfo', "seller@email.com");
+    buyer_pinf.accountBalance = 200;
+    seller_pinf.accountBalance = 200;
+
+
+
     // create seller
     var seller = factory.newResource(nameSpace, 'Seller', 'seller@email.com');
     var sellerAddress = factory.newConcept(nameSpace, 'Address');
@@ -34,12 +43,6 @@ function demoMode(demoMode) {
     sellerAddress.city = 'Fairfax';
     sellerAddress.state = 'VA';
     sellerAddress.zip = '20740';
-
-    var buyer_pinf = factory.newResource(nameSpace, 'PrivateInfo', "buyer@email.com");
-    var seller_pinf = factory.newResource(nameSpace, 'PrivateInfo', "seller@email.com");
-    buyer_pinf.accountBalance = 200;
-    seller_pinf.accountBalance = 200;
-
     seller.name = 'Jane Smith';
     seller.address = sellerAddress;
     seller.pinf = seller_pinf;
@@ -127,17 +130,36 @@ async function purchaseItem(purchase) {
 * @transaction
 */
 async function requestAuction(request) {
-    if (request.seller != request.item.owner) {
+    if (getCurrentParticipant().getFullyQualifiedIdentifier() !== 'org.quick.auction.Seller#' + request.item.owner.email) {
         throw new Error('Item does not belong to seller');
+    } else {
+        request.item.status = "REQUESTED_FOR_AUCTION";
+        let assetRegistry = await getAssetRegistry('org.quick.auction.Item');
+        await assetRegistry.update(request.item);
     }
-    request.item.status = "BEING_AUCTIONED";
-    request.auctioner.itemForBid = request.item;
-    request.auctioner.currentValueOfItemForBid = request.item.value;
-    request.item.marketValue = request.auctioner.currentValueOfItemForBid;
-    let assetRegistry = await getAssetRegistry('org.quick.auction.Item');
-    await assetRegistry.update(request.item);
-    let aucRegistry = await getParticipantRegistry('org.quick.auction.Auctioner');
-    await aucRegistry.update(request.auctioner);
+}
+
+/**
+* Auctioner accepts request for auction on an item
+* @param {org.quick.auction.AcceptAuctionRequest} request 
+* @transaction
+*/
+async function acceptAuctionRequest(request) {
+    if (getCurrentParticipant().getFullyQualifiedType() !== 'org.quick.auction.Auctioner') {
+        throw new Error('Only auctioners can accept auction requests');
+    } else if (request.item.status != "REQUESTED_FOR_AUCTION") {
+        throw new Error('Item has not been requested for auction');
+    } else {
+        var auctioner = getCurrentParticipant()
+        request.item.status = "BEING_AUCTIONED";
+        auctioner.itemForBid = request.item;
+        auctioner.currentValueOfItemForBid = request.item.value;
+        request.item.marketValue = auctioner.currentValueOfItemForBid;
+        let assetRegistry = await getAssetRegistry('org.quick.auction.Item');
+        await assetRegistry.update(request.item);
+        let aucRegistry = await getParticipantRegistry('org.quick.auction.Auctioner');
+        await aucRegistry.update(auctioner);
+    }
 }
 
 /**
@@ -146,14 +168,20 @@ async function requestAuction(request) {
 * @transaction
 */
 async function requestBid(bid) {
-    if (bid.bidAmount > bid.auctioner.currentValueOfItemForBid) {
-        bid.auctioner.currentValueOfItemForBid = bid.bidAmount;
-        bid.auctioner.highestBidder = bid.bidder;
-        bid.item.marketValue = bid.bidAmount;
-        let aucRegistry = await getParticipantRegistry('org.quick.auction.Auctioner');
-        await aucRegistry.update(bid.auctioner);
-        let itemRegistry = await getAssetRegistry('org.quick.auction.Item');
-        await itemRegistry.update(bid.item);
+    if (getCurrentParticipant().getFullyQualifiedType() !== 'org.quick.auction.Buyer') {
+        throw new Error('Only buyers can bid on an item');
+    } else if (bid.item.status != "BEING_AUCTIONED") {
+        throw new Error('Item is not up for auction');
+    } else {
+        if (bid.bidAmount > bid.auctioner.currentValueOfItemForBid) {
+            bid.auctioner.currentValueOfItemForBid = bid.bidAmount;
+            bid.auctioner.highestBidder = getCurrentParticipant();
+            bid.item.marketValue = bid.bidAmount;
+            let aucRegistry = await getParticipantRegistry('org.quick.auction.Auctioner');
+            await aucRegistry.update(bid.auctioner);
+            let itemRegistry = await getAssetRegistry('org.quick.auction.Item');
+            await itemRegistry.update(bid.item);
+        }
     }
 }
 
@@ -167,117 +195,39 @@ var contractNum = 0;
 * @transaction
 */
 async function acceptBid(purchase) {
-    if (purchase.item.owner != purchase.seller) {
+    if (getCurrentParticipant().getFullyQualifiedIdentifier() !== 'org.quick.auction.Seller#' + purchase.item.owner.email) {
         throw new Error('Item does not belong to seller');
+    } else {
+        var seller = purchase.item.owner;
+        var buyer = purchase.auctioner.highestBidder;
+        var newVal = purchase.auctioner.currentValueOfItemForBid;
+
+        seller.pinf.accountBalance += newVal;
+        seller.itemsOwned.splice(seller.itemsOwned.indexOf(purchase.item), 1);
+        let assetRegistry2 = await getAssetRegistry('org.quick.auction.PrivateInfo');
+        await assetRegistry2.update(seller.pinf);
+        let sellerRegistry = await getParticipantRegistry('org.quick.auction.Seller');
+        await sellerRegistry.update(seller);
+
+
+        buyer.pinf.accountBalance -= newVal;
+        buyer.itemsOwned.push(purchase.item);
+        await assetRegistry2.update(buyer.pinf);
+        let buyerRegistry = await getParticipantRegistry('org.quick.auction.Buyer');
+        await buyerRegistry.update(buyer);
+
+
+        purchase.item.owner = buyer;
+        purchase.item.value = newVal;
+        purchase.item.status = "SOLD";
+        let assetRegistry = await getAssetRegistry('org.quick.auction.Item');
+        await assetRegistry.update(purchase.item);
+
+
+        purchase.auctioner.itemForBid = null;
+        purchase.auctioner.currentValueOfItemForBid = 0;
+        purchase.auctioner.highestBidder = null;
+        let aucRegistry = await getParticipantRegistry('org.quick.auction.Auctioner');
+        await aucRegistry.update(purchase.auctioner);
     }
-    var buyer = purchase.auctioner.highestBidder;
-    var newVal = purchase.auctioner.currentValueOfItemForBid;
-    purchase.seller.pinf.accountBalance += newVal;
-    buyer.pinf.accountBalance -= newVal;
-    purchase.seller.itemsOwned.splice(purchase.seller.itemsOwned.indexOf(purchase.item), 1);
-    buyer.itemsOwned.push(purchase.item);
-    purchase.item.owner = buyer;
-    purchase.item.value = newVal;
-    purchase.item.status = "SOLD";
-
-
-
-    let assetRegistry = await getAssetRegistry('org.quick.auction.Item');
-    await assetRegistry.update(purchase.item);
-    let buyerRegistry = await getParticipantRegistry('org.quick.auction.Buyer');
-    await buyerRegistry.update(buyer);
-    let sellerRegistry = await getParticipantRegistry('org.quick.auction.Seller');
-    await sellerRegistry.update(purchase.seller);
-
-    purchase.auctioner.itemForBid = null;
-    purchase.auctioner.currentValueOfItemForBid = 0;
-    purchase.auctioner.highestBidder = null;
-
-    let aucRegistry = await getParticipantRegistry('org.quick.auction.Auctioner');
-    await aucRegistry.update(purchase.auctioner);
 }
-
-/**
-* Add a business
-* @param {org.quick.auction.AddBusiness} business 
-* @transaction
-*/
-function addBusiness(business) {
-    var nameSpace = 'org.quick.auction';
-    var factory = getFactory();
-
-    var address = factory.newConcept(nameSpace, 'Address');
-    address = business.address;
-
-    var pinf = factory.newResource(nameSpace, 'PrivateInfo', business.email);
-    pinf.accountBalance = business.accountBalance;
-
-    var biz = factory.newResource(nameSpace, business.status, business.email);
-    biz.name = business.name;
-    biz.address = address;
-    biz.pinf = pinf;
-
-    return getAssetRegistry('org.quick.auction.PrivateInfo')
-        .then(function (privRegistry) {
-            return privRegistry.addAll([pinf]);
-        })
-        .then(function () {
-            return getParticipantRegistry(nameSpace + '.' + business.status)
-        })
-        .then(function (businessRegistry) {
-            return businessRegistry.addAll([biz]);
-        });
-
-}
-
-/**
-* Add an item
-* @param {org.quick.auction.AddItem} newItem 
-* @transaction
-*/
-function addItem(newItem) {
-    var nameSpace = 'org.quick.auction';
-    var factory = getFactory();
-
-
-    var item = factory.newResource(nameSpace, "Item", newItem.itemId);
-    item.name = newItem.name;
-    item.owner = newItem.owner;
-    item.value = newItem.value;
-    item.marketValue = item.value;
-    item.status = 'NEW';
-
-    newItem.owner.itemsOwned.push(item);
-
-    return getAssetRegistry('org.quick.auction.Item')
-        .then(function (itemReg) {
-            return itemReg.addAll([item]);
-        })
-        .then(function () {
-            return getParticipantRegistry(nameSpace + '.Seller')
-        })
-        .then(function (sellerReg) {
-            return sellerReg.update(newItem.owner);
-        });
-
-}
-
-/**
-* Allow/deny a business access to own private info
-* @param {org.quick.auction.ChangeAccess} allowaccess 
-* @transaction
-*/
-/*
-function ChangeAccess(allowaccess){
-  if(!allowaccess.recipient.accessibleInfo){
-    allowaccess.recipient.accessibleInfo = [];
-  }
-    if(permission.equals("allow")){
-        allowaccess.recipient.accessibleInfo.push(allowaccess.owner.pinf);
-    } else{
-        allowaccess.recipient.accessibleInfo.splice(allowaccess.recipient.accessibleInfo.indexOf(allowaccess.owner.pinf),1);
-    }
-    let businessRegistry = getParticipantRegistry('org.quick.auction.Business');
-    businessRegistry.update(allowaccess.recipient);
-}
-*/
